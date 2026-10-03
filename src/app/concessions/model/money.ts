@@ -2,8 +2,8 @@
 export type MoneyInCents = number & { readonly __brand: 'MoneyInCents' };
 
 export function moneyInCents(value: number): MoneyInCents {
-  if (!Number.isInteger(value)) {
-    throw new Error('Money values must be integer cents.');
+  if (!Number.isInteger(value) || value < 0) {
+    throw new Error('Money values must be non-negative integer cents.');
   }
   return value as MoneyInCents;
 }

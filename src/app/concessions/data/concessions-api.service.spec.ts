@@ -70,4 +70,9 @@ describe('ConcessionsApiService', () => {
     expect(request.request.body).toEqual({ status });
     request.flush({ id: 'product-1', name: 'Popcorn', price: 500, status });
   });
+
+  it('rejects negative monetary values', () => {
+    expect(() => moneyInCents(-1)).toThrowError(
+      'Money values must be non-negative integer cents.');
+  });
 });
