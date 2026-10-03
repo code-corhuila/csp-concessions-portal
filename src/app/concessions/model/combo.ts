@@ -1,4 +1,5 @@
 import { ProductStatus } from './product';
+import { MoneyInCents } from './money';
 
 export interface ComboItem {
   productId: string;
@@ -7,7 +8,7 @@ export interface ComboItem {
 
 export interface ComboRequest {
   name: string;
-  price: number;
+  price: MoneyInCents;
   items: ComboItem[];
 }
 

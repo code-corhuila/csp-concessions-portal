@@ -1,3 +1,5 @@
+import { MoneyInCents } from './money';
+
 export type OrderItemType = 'PRODUCT' | 'COMBO';
 export type OrderStatus = 'PENDING' | 'RESERVED' | 'CONFIRMED' | 'CANCELLED' | 'READY' | 'DELIVERED';
 
@@ -15,5 +17,5 @@ export interface OrderRequest {
 export interface Order extends OrderRequest {
   id: string;
   status: OrderStatus;
-  totalAmount: number;
+  totalAmount: MoneyInCents;
 }

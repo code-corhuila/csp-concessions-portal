@@ -1,10 +1,12 @@
+import { MoneyInCents } from './money';
+
 export type ProductStatus = 'DRAFT' | 'PUBLISHED' | 'INACTIVE';
 
 export interface ProductRequest {
   name: string;
   description?: string;
   category?: string;
-  price: number;
+  price: MoneyInCents;
   availableStock?: number;
 }
 
