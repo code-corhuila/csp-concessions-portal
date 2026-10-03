@@ -23,3 +23,16 @@ branch into another: `merge develop -> qa` and `merge qa -> main` do not exist i
 rule.
 
 Full policy: `00-governance/branching-policy.md` in `csp-docs`.
+
+## Local deployment
+
+Copy `.env.example` to `.env` and run:
+
+```bash
+docker network create csp-frontend
+docker compose -f deploy/compose.yml up --build
+```
+
+The optional `PORT` variable controls the host port mapped to the portal. The
+shared `csp-frontend` network is external so the portal can connect to the
+platform's gateway and other frontends.

@@ -5,7 +5,7 @@ services:
       dockerfile: deploy/Dockerfile
     container_name: csp-concessions-portal
     ports:
-      - "4205:80"
+      - "${PORT:-4205}:80"
     networks:
       - csp-frontend
     healthcheck:
@@ -17,6 +17,7 @@ services:
     restart: unless-stopped
 
 networks:
+  # Create once with: docker network create csp-frontend
   csp-frontend:
     external: true
     name: csp-frontend

@@ -12,4 +12,3 @@ coverage/
 .angular/
 .tscache/
 *.pem
-node_modules

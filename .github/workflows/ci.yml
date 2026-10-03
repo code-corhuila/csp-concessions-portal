@@ -15,14 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        if: hashFiles('package.json') != ''
         with:
           node-version: '22'
       - run: npm ci
-        if: hashFiles('package.json') != ''
       - run: npm run build
-        if: hashFiles('package.json') != ''
       - run: npm run lint
-        if: hashFiles('package.json') != ''
       - run: npm test -- --browsers=ChromeHeadless
-        if: hashFiles('package.json') != ''
