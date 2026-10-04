@@ -35,4 +35,4 @@ docker compose -f deploy/compose.yml up --build
 
 The optional `PORT` variable controls the host port mapped to the portal. The
 shared `csp-frontend` network is external so the portal can connect to the
-platform's gateway and other frontends.
+platform gateway.
