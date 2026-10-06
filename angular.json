@@ -38,13 +38,13 @@
         },
         "serve": {
           "builder": "@angular-architects/native-federation:build",
-          "options": { "target": "csp-concessions-portal:serve-original:development", "rebuildDelay": 0, "dev": true, "port": 4205 }
+          "options": { "target": "csp-concessions-portal:serve-original:development", "rebuildDelay": 0, "dev": true, "port": 4204 }
         },
         "serve-original": {
           "builder": "@angular/build:dev-server",
           "configurations": { "development": { "buildTarget": "csp-concessions-portal:esbuild:development" } },
           "defaultConfiguration": "development",
-          "options": { "port": 4205 }
+          "options": { "port": 4204 }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
