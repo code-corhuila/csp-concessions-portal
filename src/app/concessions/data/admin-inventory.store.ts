@@ -11,8 +11,8 @@ export interface NewAdjustment extends StockAdjustment {
 export class AdminInventoryStore {
   private readonly products = inject(AdminProductsStore);
   private readonly items = signal<readonly StockMovement[]>([
-    { id: 'm2', productId: '61000000-0000-0000-0000-000000000002', productName: 'Nachos with cheese', quantityDelta: 25, reason: 'Initial stock', timestamp: '2026-10-01T09:05:00.000Z' },
-    { id: 'm1', productId: '61000000-0000-0000-0000-000000000001', productName: 'Popcorn (large)', quantityDelta: 40, reason: 'Initial stock', timestamp: '2026-10-01T09:00:00.000Z' },
+    { id: 'm2', productId: '61000000-0000-0000-0000-000000000002', productName: 'Nachos with cheese', quantityDelta: 25, reason: 'Stock inicial', timestamp: '2026-10-01T09:05:00.000Z' },
+    { id: 'm1', productId: '61000000-0000-0000-0000-000000000001', productName: 'Popcorn (large)', quantityDelta: 40, reason: 'Stock inicial', timestamp: '2026-10-01T09:00:00.000Z' },
   ]);
 
   /** Newest first. */

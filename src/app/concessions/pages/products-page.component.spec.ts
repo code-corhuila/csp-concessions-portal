@@ -31,7 +31,7 @@ describe('ProductsPageComponent', () => {
 
     expect(rows.length).toBe(4);
     expect(rows[0]).toContain('Popcorn (large)');
-    expect(rows[0]).toContain('Food');
+    expect(rows[0]).toContain('Comida');
     expect(rows[0]).toContain(formatCents(moneyInCents(500)));
     expect(rows[0]).toContain('Publicado');
     expect(rows[3]).toContain('Borrador');
@@ -39,7 +39,7 @@ describe('ProductsPageComponent', () => {
 
   it('saves a new product as a draft and says so', () => {
     type('#product-name', 'Hot dog');
-    type('#product-category', 'Food');
+    type('#product-category', 'Comida');
     type('#product-price', '4.5');
     submit();
 
@@ -53,7 +53,7 @@ describe('ProductsPageComponent', () => {
 
   it('shows the reason when the product is rejected and keeps the list', () => {
     type('#product-name', '   ');
-    type('#product-category', 'Food');
+    type('#product-category', 'Comida');
     type('#product-price', '4');
     submit();
 
@@ -63,7 +63,7 @@ describe('ProductsPageComponent', () => {
 
   it('rejects a negative price', () => {
     type('#product-name', 'Water');
-    type('#product-category', 'Beverage');
+    type('#product-category', 'Bebida');
     type('#product-price', '-1');
     submit();
 

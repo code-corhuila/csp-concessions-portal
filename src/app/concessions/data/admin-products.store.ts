@@ -22,7 +22,7 @@ export class AdminProductsStore {
     }
     this.items.update(current => [
       ...current,
-      { id: crypto.randomUUID(), name, category: product.category.trim(), price: moneyInCents(product.price), stock: 0, status: 'DRAFT', lastReason: 'Product created' },
+      { id: crypto.randomUUID(), name, category: product.category.trim(), price: moneyInCents(product.price), stock: 0, status: 'DRAFT', lastReason: 'Producto creado' },
     ]);
   }
 

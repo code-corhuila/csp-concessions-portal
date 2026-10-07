@@ -18,8 +18,8 @@ describe('AdminInventoryStore', () => {
 
   it('starts with the initial stock movements of the synthetic products, newest first', () => {
     expect(store.movements().map(m => [m.productName, m.quantityDelta, m.reason])).toEqual([
-      ['Nachos with cheese', 25, 'Initial stock'],
-      ['Popcorn (large)', 40, 'Initial stock'],
+      ['Nachos with cheese', 25, 'Stock inicial'],
+      ['Popcorn (large)', 40, 'Stock inicial'],
     ]);
   });
 
