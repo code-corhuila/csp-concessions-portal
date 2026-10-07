@@ -1,19 +1,19 @@
 <section class="snacks" aria-labelledby="snack-selection-title">
   <header class="snacks-header">
-    <h1 id="snack-selection-title">Snack selection</h1>
-    <p>Add food and drinks to your order. This step is optional.</p>
+    <h1 id="snack-selection-title">Selección de snacks</h1>
+    <p>Agrega comida y bebidas a tu pedido. Este paso es opcional.</p>
   </header>
 
   <div class="snacks-layout">
     <div class="catalog">
       <section aria-labelledby="products-title">
-        <h2 id="products-title">Products</h2>
+        <h2 id="products-title">Productos</h2>
         <ul class="cards">
           @for (item of products; track item.id) {
             <li class="card" data-testid="product">
               <h3>{{ item.name }}</h3>
               <p class="price">{{ money(item.price) }}</p>
-              <button type="button" class="btn btn-primary" [attr.aria-label]="'Add ' + item.name" (click)="add(item)">Add</button>
+              <button type="button" class="btn btn-primary" [attr.aria-label]="'Agregar ' + item.name" (click)="add(item)">Agregar</button>
             </li>
           }
         </ul>
@@ -26,7 +26,7 @@
             <li class="card" data-testid="combo">
               <h3>{{ item.name }}</h3>
               <p class="price">{{ money(item.price) }}</p>
-              <button type="button" class="btn btn-primary" [attr.aria-label]="'Add ' + item.name" (click)="add(item)">Add</button>
+              <button type="button" class="btn btn-primary" [attr.aria-label]="'Agregar ' + item.name" (click)="add(item)">Agregar</button>
             </li>
           }
         </ul>
@@ -34,18 +34,18 @@
     </div>
 
     <aside class="summary" aria-labelledby="order-title">
-      <h2 id="order-title">Your order</h2>
+      <h2 id="order-title">Tu pedido</h2>
       @if (order.lines().length === 0) {
-        <p class="empty" data-testid="empty-order" role="status">Your order is empty.</p>
+        <p class="empty" data-testid="empty-order" role="status">Tu pedido está vacío.</p>
       } @else {
         <ul class="lines">
           @for (line of order.lines(); track line.item.id) {
             <li class="line" data-testid="order-line">
               <span class="line-name">{{ line.item.name }}</span>
               <span class="quantity">
-                <button type="button" class="btn btn-secondary" [attr.aria-label]="'Decrease ' + line.item.name" (click)="decrease(line.item, line.quantity)">−</button>
+                <button type="button" class="btn btn-secondary" [attr.aria-label]="'Disminuir ' + line.item.name" (click)="decrease(line.item, line.quantity)">−</button>
                 <span class="line-quantity">{{ line.quantity }}</span>
-                <button type="button" class="btn btn-secondary" [attr.aria-label]="'Increase ' + line.item.name" (click)="add(line.item)">+</button>
+                <button type="button" class="btn btn-secondary" [attr.aria-label]="'Aumentar ' + line.item.name" (click)="add(line.item)">+</button>
               </span>
               <span class="line-subtotal">{{ money(line.subtotal) }}</span>
             </li>

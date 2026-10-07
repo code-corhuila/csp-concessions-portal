@@ -35,14 +35,14 @@ describe('SnackSelectionPageComponent', () => {
   });
 
   it('starts with an empty order', () => {
-    expect(texts('[data-testid="empty-order"]')).toEqual(['Your order is empty.']);
+    expect(texts('[data-testid="empty-order"]')).toEqual(['Tu pedido está vacío.']);
     expect(texts('[data-testid="total"]')).toEqual([cents(0)]);
   });
 
   it('shows each added item with its quantity and the computed total', () => {
-    click('[aria-label="Add Popcorn (large)"]');
-    click('[aria-label="Add Popcorn (large)"]');
-    click('[aria-label="Add Combo Familiar"]');
+    click('[aria-label="Agregar Popcorn (large)"]');
+    click('[aria-label="Agregar Popcorn (large)"]');
+    click('[aria-label="Agregar Combo Familiar"]');
 
     expect(texts('[data-testid="order-line"] .line-name')).toEqual(['Popcorn (large)', 'Combo Familiar']);
     expect(texts('[data-testid="order-line"] .line-quantity')).toEqual(['2', '1']);
@@ -51,12 +51,12 @@ describe('SnackSelectionPageComponent', () => {
   });
 
   it('changes a quantity and removes the line when it reaches zero', () => {
-    click('[aria-label="Add Nachos with cheese"]');
-    click('[aria-label="Increase Nachos with cheese"]');
+    click('[aria-label="Agregar Nachos with cheese"]');
+    click('[aria-label="Aumentar Nachos with cheese"]');
     expect(texts('[data-testid="total"]')).toEqual([cents(700)]);
 
-    click('[aria-label="Decrease Nachos with cheese"]');
-    click('[aria-label="Decrease Nachos with cheese"]');
+    click('[aria-label="Disminuir Nachos with cheese"]');
+    click('[aria-label="Disminuir Nachos with cheese"]');
     expect(page.querySelector('[data-testid="order-line"]')).toBeNull();
     expect(texts('[data-testid="total"]')).toEqual([cents(0)]);
   });
