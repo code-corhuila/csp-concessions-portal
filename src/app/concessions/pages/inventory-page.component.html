@@ -1,0 +1,82 @@
+<section aria-labelledby="inventory-title">
+  <h1 id="inventory-title" class="page-title">Inventario de Concessions</h1>
+  <p class="page-description">Registra ajustes auditables sin permitir stock negativo.</p>
+
+  <div class="admin-grid">
+    <section class="card" aria-labelledby="adjust-title">
+      <h2 id="adjust-title" class="card-title">Ajustar stock</h2>
+      @if (error()) {
+        <p class="feedback-error" role="alert">{{ error() }}</p>
+      }
+      @if (saved()) {
+        <p class="feedback-success" role="status">{{ saved() }}</p>
+      }
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-group">
+          <label class="form-label" for="inventory-product">Producto</label>
+          <select id="inventory-product" class="form-control" formControlName="productId">
+            <option value="" disabled>Elige un producto</option>
+            @for (product of products.products(); track product.id) {
+              <option [value]="product.id">{{ product.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inventory-quantity">Cantidad (+ entrada / - salida)</label>
+          <input id="inventory-quantity" class="form-control" type="number" step="1" formControlName="quantityDelta" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inventory-reason">Motivo</label>
+          <input id="inventory-reason" class="form-control" formControlName="reason" />
+        </div>
+        <button class="btn btn-primary btn-full" type="submit">Registrar ajuste</button>
+      </form>
+    </section>
+
+    <div>
+      <section class="card" aria-labelledby="stock-title">
+        <h2 id="stock-title" class="card-title">Existencias</h2>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr><th>Producto</th><th>Stock</th><th>Estado</th><th>Último motivo</th></tr>
+            </thead>
+            <tbody>
+              @for (product of products.products(); track product.id) {
+                <tr data-testid="stock-row">
+                  <td>{{ product.name }}</td>
+                  <td>{{ product.stock }}</td>
+                  <td>
+                    <span class="badge" [class.badge-published]="product.status === 'PUBLISHED'" [class.badge-inactive]="product.status === 'INACTIVE'">{{ statusLabel(product.status) }}</span>
+                  </td>
+                  <td>{{ product.lastReason }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="movements-title">
+        <h2 id="movements-title" class="card-title">Movimientos</h2>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Motivo</th></tr>
+            </thead>
+            <tbody>
+              @for (movement of inventory.movements(); track movement.id) {
+                <tr data-testid="movement-row">
+                  <td>{{ movement.timestamp | date: 'short' }}</td>
+                  <td>{{ movement.productName }}</td>
+                  <td>{{ movement.quantityDelta > 0 ? '+' : '' }}{{ movement.quantityDelta }}</td>
+                  <td>{{ movement.reason }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

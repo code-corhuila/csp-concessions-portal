@@ -43,7 +43,7 @@ the shell's.
 | Entry | Routes | Area | Role | Shell mount |
 |---|---|---|---|---|
 | `./snack-routes` | `SNACK_ROUTES` | Snack selection of the purchase flow | `CLIENT` | `/booking/snack-selection` (not mounted yet in `csp-front`) |
-| `./routes` | `CONCESSIONS_ROUTES` | Products, combos, orders and inventory | `ADMIN` | `/admin/concessions` |
+| `./routes` | `CONCESSIONS_ROUTES` | Products, combos and inventory (orders is a placeholder) | `ADMIN` | `/admin/concessions` |
 
 ## Cut 2: synthetic catalog (HU-FE-CONCESSIONS-001)
 
@@ -64,7 +64,13 @@ positive integer.
 | Route | Behaviour |
 |---|---|
 | `/booking/snack-selection` | Product and combo cards, an add button on each, and the order with quantities, subtotals and total. An empty order says so |
-| `/admin/concessions/*` | Administration screens: placeholders in Cut 2 |
+| `/admin/concessions/products` | Table of products and form for a new one (saved as a draft with no stock); publish and deactivate |
+| `/admin/concessions/combos` | Combos with their components; a new combo takes published products in positive whole quantities |
+| `/admin/concessions/inventory` | Stock and last reason per product, an adjustment form that never leaves negative stock, and the movements |
+| `/admin/concessions/orders` | Placeholder |
+
+The administration data is also in memory (`AdminProductsStore`, `AdminCombosStore`, `AdminInventoryStore`) and
+a page reload restores it. The administration seeds are separate from the customer dataset but share its ids.
 
 Run on its own, `/` opens `/booking/snack-selection`. The screen is in Spanish and the look follows
 `12-ux-ui/design-system.md` and the mockup of `csp-docs`.

@@ -19,7 +19,7 @@ describe('AdminProductsStore', () => {
   });
 
   it('saves a new product as a draft with no stock', () => {
-    store.create({ name: '  Hot dog ', category: 'Food', price: moneyInCents(450) });
+    store.create({ name: '  Hot dog ', category: 'Comida', price: moneyInCents(450) });
 
     const created = store.products().at(-1)!;
     expect(created.name).toBe('Hot dog');
@@ -29,14 +29,14 @@ describe('AdminProductsStore', () => {
   });
 
   it('rejects an empty name', () => {
-    expect(() => store.create({ name: '   ', category: 'Food', price: moneyInCents(100) }))
+    expect(() => store.create({ name: '   ', category: 'Comida', price: moneyInCents(100) }))
       .toThrowError('El nombre es obligatorio.');
     expect(store.products().length).toBe(4);
   });
 
   it('rejects a price that is not a non-negative integer of cents', () => {
     for (const price of [-1, 1.5, NaN]) {
-      expect(() => store.create({ name: 'Water', category: 'Beverage', price: price as never }))
+      expect(() => store.create({ name: 'Water', category: 'Bebida', price: price as never }))
         .toThrowError('El precio debe ser un monto no negativo.');
     }
     expect(store.products().length).toBe(4);
