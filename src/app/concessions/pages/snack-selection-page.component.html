@@ -1,0 +1,58 @@
+<section class="snacks" aria-labelledby="snack-selection-title">
+  <header class="snacks-header">
+    <h1 id="snack-selection-title">Selección de snacks</h1>
+    <p>Agrega comida y bebidas a tu pedido. Este paso es opcional.</p>
+  </header>
+
+  <div class="snacks-layout">
+    <div class="catalog">
+      <section aria-labelledby="products-title">
+        <h2 id="products-title">Productos</h2>
+        <ul class="cards">
+          @for (item of products; track item.id) {
+            <li class="card" data-testid="product">
+              <h3>{{ item.name }}</h3>
+              <p class="price">{{ money(item.price) }}</p>
+              <button type="button" class="btn btn-primary" [attr.aria-label]="'Agregar ' + item.name" (click)="add(item)">Agregar</button>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section aria-labelledby="combos-title">
+        <h2 id="combos-title">Combos</h2>
+        <ul class="cards">
+          @for (item of combos; track item.id) {
+            <li class="card" data-testid="combo">
+              <h3>{{ item.name }}</h3>
+              <p class="price">{{ money(item.price) }}</p>
+              <button type="button" class="btn btn-primary" [attr.aria-label]="'Agregar ' + item.name" (click)="add(item)">Agregar</button>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <aside class="summary" aria-labelledby="order-title">
+      <h2 id="order-title">Tu pedido</h2>
+      @if (order.lines().length === 0) {
+        <p class="empty" data-testid="empty-order" role="status">Tu pedido está vacío.</p>
+      } @else {
+        <ul class="lines">
+          @for (line of order.lines(); track line.item.id) {
+            <li class="line" data-testid="order-line">
+              <span class="line-name">{{ line.item.name }}</span>
+              <span class="quantity">
+                <button type="button" class="btn btn-secondary" [attr.aria-label]="'Disminuir ' + line.item.name" (click)="decrease(line.item, line.quantity)">−</button>
+                <span class="line-quantity">{{ line.quantity }}</span>
+                <button type="button" class="btn btn-secondary" [attr.aria-label]="'Aumentar ' + line.item.name" (click)="add(line.item)">+</button>
+              </span>
+              <span class="line-subtotal">{{ money(line.subtotal) }}</span>
+            </li>
+          }
+        </ul>
+      }
+      <p class="total"><span>Total</span> <strong data-testid="total">{{ money(order.total()) }}</strong></p>
+    </aside>
+  </div>
+</section>
