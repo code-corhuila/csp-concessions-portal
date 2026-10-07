@@ -34,6 +34,11 @@ export class AdminProductsStore {
     this.setStatus(id, 'INACTIVE');
   }
 
+  /** Used by the inventory: the new stock and the reason of the last movement. */
+  setStock(id: string, stock: number, reason: string): void {
+    this.items.update(current => current.map(p => (p.id === id ? { ...p, stock, lastReason: reason } : p)));
+  }
+
   private setStatus(id: string, status: ProductStatus): void {
     this.items.update(current => current.map(p => (p.id === id ? { ...p, status } : p)));
   }
