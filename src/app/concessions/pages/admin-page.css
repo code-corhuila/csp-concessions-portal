@@ -1,0 +1,179 @@
+/* Visual language of the admin mockup (csp-docs/12-ux-ui/mockup/index-admin.html, HU-UI-002) and the
+   design system tokens (design-system.md, HU-UI-001). The tokens fall back to the design-system values
+   so the portal also renders on its own; inside the shell they are inherited. */
+:host {
+  --color-brand-primary: #8B5CF6;
+  --color-brand-primary-hover: #A78BFA;
+  --color-brand-secondary: #38BDF8;
+  --color-bg-primary: #0B0D17;
+  --color-bg-surface: #13172A;
+  --color-border: #1E293B;
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-error: #EF4444;
+  --color-success: #10B981;
+  display: block;
+  padding: 24px 7%;
+  color: var(--color-text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.admin-nav {
+  display: flex;
+  gap: 8px;
+  padding: 16px 7% 0;
+}
+
+.admin-nav a {
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-nav a.active {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--color-brand-primary-hover);
+}
+
+.page-description {
+  margin: 0 0 24px;
+  color: var(--color-text-secondary);
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+  gap: 24px;
+}
+
+@media (max-width: 800px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.card-title {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.form-control {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+.form-control:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--color-brand-secondary);
+  outline-offset: 2px;
+}
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--color-brand-primary);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.btn-primary:hover {
+  background: var(--color-brand-primary-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--color-brand-secondary);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.data-table th {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.badge-published {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--color-success);
+}
+
+.badge-inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-error);
+}
+
+.feedback-error,
+.feedback-success {
+  margin: 0 0 12px;
+}
+
+.feedback-error {
+  color: var(--color-error);
+}
+
+.feedback-success {
+  color: var(--color-success);
+}
