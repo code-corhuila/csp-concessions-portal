@@ -71,6 +71,46 @@ describe('ConcessionsApiService', () => {
     request.flush({ id: 'product-1', name: 'Popcorn', price: 500, status });
   });
 
+  it('lists combos, orders and stock movements with the same pagination', () => {
+    const pagination = (url: string) => (r: { url: string; params: { get(k: string): string | null } }) =>
+      r.url === url && r.params.get('page') === '1' && r.params.get('limit') === '10';
+    service.listCombos(1, 10).subscribe();
+    service.listOrders(1, 10).subscribe();
+    service.listStockMovements(1, 10).subscribe();
+
+    for (const url of ['combos', 'orders', 'stock/movements']) {
+      const request = http.expectOne(pagination(`/api/v1/concessions/${url}`));
+      expect(request.request.method).toBe('GET');
+      request.flush({ data: [], meta: { page: 1, limit: 10, total: 0, totalPages: 0 } });
+    }
+  });
+
+  it('reads an order by id, encoding the id', () => {
+    service.getOrder('a/b').subscribe();
+
+    const request = http.expectOne('/api/v1/concessions/orders/a%2Fb');
+    expect(request.request.method).toBe('GET');
+    request.flush({ id: 'a/b', status: 'RESERVED', totalAmount: moneyInCents(500), items: [] });
+  });
+
+  it('sends an idempotency key to cancel an order', () => {
+    service.cancelOrder('order-1', 'cancel-key').subscribe();
+
+    const request = http.expectOne('/api/v1/concessions/orders/order-1/cancel');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.headers.get('Idempotency-Key')).toBe('cancel-key');
+    request.flush(null);
+  });
+
+  it('sends an idempotency key for stock adjustments', () => {
+    service.adjustStock({ productId: 'product-1', quantityDelta: -3 }, 'stock-key').subscribe();
+
+    const request = http.expectOne('/api/v1/concessions/stock/adjust');
+    expect(request.request.headers.get('Idempotency-Key')).toBe('stock-key');
+    expect(request.request.body).toEqual({ productId: 'product-1', quantityDelta: -3 });
+    request.flush(null);
+  });
+
   it('rejects negative monetary values', () => {
     expect(() => moneyInCents(-1)).toThrowError(
       'Money values must be non-negative integer cents.');
