@@ -1,13 +1,10 @@
 import { Routes } from '@angular/router';
 
+/** Administration area (role ADMIN), mounted at /admin/concessions. The customer screen is in snack.routes.ts (ADR-027). */
 export const CONCESSIONS_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () => import('./pages/concessions-page.component').then(m => m.ConcessionsPageComponent),
-  },
-  {
-    path: 'snack-selection',
-    loadComponent: () => import('./pages/snack-selection-page.component').then(m => m.SnackSelectionPageComponent),
   },
   {
     path: 'products',
