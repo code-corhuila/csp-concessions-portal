@@ -1,0 +1,151 @@
+/* Visual language of the mockup (csp-docs/12-ux-ui/design-system.md, HU-UI-001; buttons and cards of
+   12-ux-ui/mockup/index.html, HU-UI-002). The tokens fall back to the design-system values so the
+   portal also renders on its own; inside the shell they are inherited. */
+:host {
+  --color-brand-primary: #8B5CF6;
+  --color-brand-primary-hover: #A78BFA;
+  --color-brand-secondary: #38BDF8;
+  --color-bg-surface: #13172A;
+  --color-border: #1E293B;
+  --color-border-glow: rgba(139, 92, 246, 0.4);
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  display: block;
+  color: var(--color-text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.snacks {
+  padding: 32px 7%;
+}
+
+.snacks-header p {
+  color: var(--color-text-secondary);
+}
+
+.snacks-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 800px) {
+  .snacks-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 0 0 12px;
+}
+
+.cards,
+.lines {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
+}
+
+.card,
+.summary {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.card:hover {
+  border-color: var(--color-border-glow);
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 0 0 4px;
+}
+
+.price {
+  color: var(--color-brand-secondary);
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-brand-secondary);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--color-brand-primary);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.btn-primary:hover {
+  background: var(--color-brand-primary-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--color-brand-secondary);
+  padding: 2px 10px;
+}
+
+.btn-secondary:hover {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.summary {
+  align-self: start;
+}
+
+.empty {
+  color: var(--color-text-secondary);
+}
+
+.lines {
+  margin-bottom: 12px;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.quantity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  font-size: 1.25rem;
+}
