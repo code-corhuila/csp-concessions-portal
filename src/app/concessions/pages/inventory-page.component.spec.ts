@@ -36,7 +36,7 @@ describe('InventoryPageComponent', () => {
     expect(rows[0]).toContain('Popcorn (large)');
     expect(rows[0]).toContain('40');
     expect(rows[0]).toContain('Publicado');
-    expect(rows[0]).toContain('Initial stock');
+    expect(rows[0]).toContain('Stock inicial');
   });
 
   it('registers an adjustment, updates the stock and lists the movement', () => {
