@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { CONCESSIONS_ROUTES } from '../concessions.routes';
 
@@ -24,5 +24,19 @@ describe('AdminLayoutComponent', () => {
 
   it('marks the screen that is open', () => {
     expect(Array.from(page.querySelectorAll('nav a.active')).map(a => a.textContent)).toEqual(['Productos']);
+  });
+
+  it('opens each administration screen under the layout', async () => {
+    const router = TestBed.inject(Router);
+    const heading = () => page.querySelector('h1')?.textContent;
+
+    await router.navigateByUrl('/combos');
+    expect(heading()).toBe('Combos de Concessions');
+
+    await router.navigateByUrl('/inventory');
+    expect(heading()).toBe('Inventario de Concessions');
+
+    await router.navigateByUrl('/orders');
+    expect(page.querySelector('nav')).not.toBeNull();
   });
 });
