@@ -59,4 +59,12 @@ describe('CombosPageComponent', () => {
     expect(texts('[role="alert"]')).toEqual(['Elige al menos un producto.']);
     expect(page.querySelectorAll('[data-testid="combo-row"]').length).toBe(1);
   });
+
+  it('rejects a combo with no price', () => {
+    type('#combo-name', 'Pareja');
+    type('[data-testid="component-quantity"]', '1');
+    submit();
+
+    expect(texts('[role="alert"]')).toEqual(['El precio debe ser un monto no negativo.']);
+  });
 });
