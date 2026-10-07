@@ -63,4 +63,10 @@ describe('AdminCombosStore', () => {
 
     expect(store.availableProducts().map(p => p.id)).toEqual([POPCORN]);
   });
+
+  it('names a component by its id when the product is unknown', () => {
+    const combo = { ...store.combos()[0], items: [{ productId: 'gone', quantity: 3 }] };
+
+    expect(store.describe(combo)).toBe('3× gone');
+  });
 });

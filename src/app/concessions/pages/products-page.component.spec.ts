@@ -79,4 +79,22 @@ describe('ProductsPageComponent', () => {
     fixture.detectChanges();
     expect(texts('[data-testid="product-row"]')[0]).toContain('Inactivo');
   });
+
+  it('converts a price with cents to integer cents without float errors', () => {
+    type('#product-name', 'Menu');
+    type('#product-category', 'Comida');
+    type('#product-price', '19.99');
+    submit();
+
+    expect(texts('[data-testid="product-row"]')[4]).toContain(formatCents(moneyInCents(1999)));
+    expect(texts('[role="alert"]')).toEqual([]);
+  });
+
+  it('rejects a product with no price', () => {
+    type('#product-name', 'Menu');
+    type('#product-category', 'Comida');
+    submit();
+
+    expect(texts('[role="alert"]')).toEqual(['El precio debe ser un monto no negativo.']);
+  });
 });
