@@ -11,13 +11,18 @@ describe('standalone routes', () => {
     router = TestBed.inject(Router);
   });
 
-  it('opens the snack selection from the root, under /concessions like inside the shell', async () => {
+  it('opens the customer snack selection from the root, at its documented address', async () => {
     await RouterTestingHarness.create('/');
-    expect(router.url).toBe('/concessions/snack-selection');
+    expect(router.url).toBe('/booking/snack-selection');
   });
 
-  it('keeps the other concessions screens reachable under /concessions', async () => {
-    await RouterTestingHarness.create('/concessions/products');
-    expect(router.url).toBe('/concessions/products');
+  it('keeps the administration screens under /admin/concessions', async () => {
+    await RouterTestingHarness.create('/admin/concessions/products');
+    expect(router.url).toBe('/admin/concessions/products');
+  });
+
+  it('does not offer the snack selection inside the administration area', async () => {
+    await RouterTestingHarness.create('/admin/concessions/snack-selection').catch(() => undefined);
+    expect(router.url).not.toBe('/admin/concessions/snack-selection');
   });
 });
