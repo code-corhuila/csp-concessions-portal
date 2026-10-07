@@ -16,6 +16,11 @@ describe('standalone routes', () => {
     expect(router.url).toBe('/booking/snack-selection');
   });
 
+  it('opens the products screen at the start of the administration area', async () => {
+    await RouterTestingHarness.create('/admin/concessions');
+    expect(router.url).toBe('/admin/concessions/products');
+  });
+
   it('keeps the administration screens under /admin/concessions', async () => {
     await RouterTestingHarness.create('/admin/concessions/products');
     expect(router.url).toBe('/admin/concessions/products');
