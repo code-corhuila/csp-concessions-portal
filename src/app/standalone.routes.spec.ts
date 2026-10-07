@@ -22,7 +22,7 @@ describe('standalone routes', () => {
   });
 
   it('does not offer the snack selection inside the administration area', async () => {
-    await RouterTestingHarness.create('/admin/concessions/snack-selection').catch(() => undefined);
-    expect(router.url).not.toBe('/admin/concessions/snack-selection');
+    // The router rejects an address no route matches: the customer screen has no place in the admin area.
+    await expectAsync(RouterTestingHarness.create('/admin/concessions/snack-selection')).toBeRejected();
   });
 });
