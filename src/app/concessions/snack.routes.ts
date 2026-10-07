@@ -7,7 +7,7 @@ import { Routes } from '@angular/router';
 export const SNACK_ROUTES: Routes = [
   {
     path: '',
-    title: 'Snack selection',
+    title: 'Selección de snacks',
     loadComponent: () => import('./pages/snack-selection-page.component').then(m => m.SnackSelectionPageComponent),
   },
 ];
