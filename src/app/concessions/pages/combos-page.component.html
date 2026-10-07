@@ -1,0 +1,65 @@
+<section aria-labelledby="combos-title">
+  <h1 id="combos-title" class="page-title">Combos de Concessions</h1>
+  <p class="page-description">Define combos usando productos publicados y cantidades positivas.</p>
+
+  <div class="admin-grid">
+    <section class="card" aria-labelledby="new-combo-title">
+      <h2 id="new-combo-title" class="card-title">Nuevo combo</h2>
+      @if (error()) {
+        <p class="feedback-error" role="alert">{{ error() }}</p>
+      }
+      @if (saved()) {
+        <p class="feedback-success" role="status">{{ saved() }}</p>
+      }
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-group">
+          <label class="form-label" for="combo-name">Nombre</label>
+          <input id="combo-name" class="form-control" formControlName="name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="combo-price">Precio</label>
+          <input id="combo-price" class="form-control" type="number" step="0.01" formControlName="price" />
+        </div>
+        <fieldset class="form-group">
+          <legend class="form-label">Componentes (cantidad por producto)</legend>
+          @for (product of store.availableProducts(); track product.id) {
+            <label class="form-label">
+              <span data-testid="component-name">{{ product.name }}</span>
+              <input
+                class="form-control"
+                type="number"
+                min="0"
+                step="1"
+                data-testid="component-quantity"
+                [value]="quantities()[product.id] ?? 0"
+                (input)="setQuantity(product.id, $any($event.target).value)"
+              />
+            </label>
+          }
+        </fieldset>
+        <button class="btn btn-primary btn-full" type="submit">Guardar combo</button>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="registered-combos-title">
+      <h2 id="registered-combos-title" class="card-title">Combos registrados</h2>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr><th>Nombre</th><th>Componentes</th><th>Precio</th><th>Estado</th></tr>
+          </thead>
+          <tbody>
+            @for (combo of store.combos(); track combo.id) {
+              <tr data-testid="combo-row">
+                <td>{{ combo.name }}</td>
+                <td>{{ store.describe(combo) }}</td>
+                <td>{{ money(combo.price) }}</td>
+                <td><span class="badge" [class.badge-published]="combo.status === 'PUBLISHED'">{{ statusLabel(combo.status) }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</section>
