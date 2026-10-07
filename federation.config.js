@@ -4,6 +4,7 @@ module.exports = withNativeFederation({
   name: 'concessions',
   exposes: {
     './routes': './src/app/concessions/concessions.routes.ts',
+    './snack-routes': './src/app/concessions/snack.routes.ts',
   },
   shared: {
     ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
