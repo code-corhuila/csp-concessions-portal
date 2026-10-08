@@ -84,6 +84,10 @@ docker network create csp-frontend
 docker compose -f deploy/compose.yml up --build
 ```
 
-The optional `PORT` variable controls the host port mapped to the portal. The
+The optional `PORT` variable controls the host port mapped to the portal. The shell loads this portal from
+another origin, so the container renders its CORS rule from `CORS_ALLOWED_ORIGIN_REGEX` when it starts (ADR-026) and
+refuses to start without it; the development value is `^http://localhost:420[0-5]$` and `deploy/compose.yml` sets it
+when it is not defined. CI builds the image and checks that it answers the allowed origin, stays silent for any other
+and does not start without the variable. The
 shared `csp-frontend` network is external so the portal can connect to the
 platform gateway.
