@@ -6,6 +6,8 @@ All notable changes of `csp-concessions-portal` are recorded here. The format fo
 re-applied with `git cherry-pick -x` (numerals 6.2.3, 10 and 11 of the course norm); it reaches `main` by pull request, never by merging `qa`,
 and is tagged `v<version>` once it is merged.
 
+## [Unreleased]
+
 ## [2.0.0] - 2026-10-08
 
 MVP 2 (Cut 2), first release of the portal. Story HU-FE-CONCESSIONS-001
@@ -41,6 +43,7 @@ order, and the administrator manages products, combos and inventory, all over a 
 
 ### Known limits
 
+- The administration area has no authorization of its own: the shell mounts it behind its role guard, which is a client-side check on the session of the auth portal and not a security boundary until a backend enforces it.
 - There is no backend: the dataset is burned into the portal; the calls to `csp-concessions-api` come in a later cut.
 - Open follow-ups, not in this release: guard the administration routes inside the portal
   ([#12](https://github.com/code-corhuila/csp-concessions-portal/issues/12); the shell already guards them), move the HTTP client and the
