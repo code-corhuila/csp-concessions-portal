@@ -1,0 +1,62 @@
+<section aria-labelledby="products-title">
+  <h1 id="products-title" class="page-title">Productos de Concessions</h1>
+  <p class="page-description">Administra productos publicables para pedidos de clientes.</p>
+
+  <div class="admin-grid">
+    <section class="card" aria-labelledby="new-product-title">
+      <h2 id="new-product-title" class="card-title">Nuevo producto</h2>
+      @if (error()) {
+        <p class="feedback-error" role="alert">{{ error() }}</p>
+      }
+      @if (saved()) {
+        <p class="feedback-success" role="status">{{ saved() }}</p>
+      }
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-group">
+          <label class="form-label" for="product-name">Nombre</label>
+          <input id="product-name" class="form-control" formControlName="name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="product-category">Categoría</label>
+          <input id="product-category" class="form-control" formControlName="category" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="product-price">Precio</label>
+          <input id="product-price" class="form-control" type="number" step="0.01" formControlName="price" />
+        </div>
+        <button class="btn btn-primary btn-full" type="submit">Guardar producto</button>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="registered-products-title">
+      <h2 id="registered-products-title" class="card-title">Productos registrados</h2>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acción</th></tr>
+          </thead>
+          <tbody>
+            @for (product of store.products(); track product.id) {
+              <tr data-testid="product-row">
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ money(product.price) }}</td>
+                <td>{{ product.stock }}</td>
+                <td>
+                  <span class="badge" [class.badge-published]="product.status === 'PUBLISHED'" [class.badge-inactive]="product.status === 'INACTIVE'">{{ statusLabel(product.status) }}</span>
+                </td>
+                <td>
+                  @if (product.status === 'PUBLISHED') {
+                    <button type="button" class="btn btn-secondary" [attr.aria-label]="'Desactivar ' + product.name" (click)="store.deactivate(product.id)">Desactivar</button>
+                  } @else {
+                    <button type="button" class="btn btn-secondary" [attr.aria-label]="'Publicar ' + product.name" (click)="store.publish(product.id)">Publicar</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</section>

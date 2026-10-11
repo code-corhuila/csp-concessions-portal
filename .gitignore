@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-*/
+build/
+.env
+.env.local
+.env.*.local
+.vscode/
+.idea/
+*.log
+coverage/
+.angular/
+.tscache/
+*.pem
