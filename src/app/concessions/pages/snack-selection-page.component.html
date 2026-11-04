@@ -4,12 +4,16 @@
     <p>Agrega comida y bebidas a tu pedido. Este paso es opcional.</p>
   </header>
 
+  @if (catalog.loadError()) {
+    <p class="load-error" data-testid="load-error" role="alert">{{ catalog.loadError() }}</p>
+  }
+
   <div class="snacks-layout">
     <div class="catalog">
       <section aria-labelledby="products-title">
         <h2 id="products-title">Productos</h2>
         <ul class="cards">
-          @for (item of products; track item.id) {
+          @for (item of products(); track item.id) {
             <li class="card" data-testid="product">
               <h3>{{ item.name }}</h3>
               <p class="price">{{ money(item.price) }}</p>
@@ -22,7 +26,7 @@
       <section aria-labelledby="combos-title">
         <h2 id="combos-title">Combos</h2>
         <ul class="cards">
-          @for (item of combos; track item.id) {
+          @for (item of combos(); track item.id) {
             <li class="card" data-testid="combo">
               <h3>{{ item.name }}</h3>
               <p class="price">{{ money(item.price) }}</p>
