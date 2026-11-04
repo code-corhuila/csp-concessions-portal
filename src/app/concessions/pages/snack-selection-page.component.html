@@ -57,6 +57,18 @@
         </ul>
       }
       <p class="total"><span>Total</span> <strong data-testid="total">{{ money(order.total()) }}</strong></p>
+
+      @if (placed(); as created) {
+        <p class="placed" data-testid="order-placed" role="status">Tu pedido quedó reservado. Total: {{ money(created.totalAmount) }}</p>
+      } @else {
+        <button type="button" class="btn btn-primary" data-testid="place-order" [disabled]="order.lines().length === 0 || sending()" (click)="placeOrder()">Confirmar pedido</button>
+      }
+      @if (orderError()) {
+        <p class="order-error" data-testid="order-error" role="alert">{{ orderError() }}</p>
+      }
+      @if (reservationId) {
+        <a class="btn btn-secondary" data-testid="continue" [routerLink]="['/booking/checkout', reservationId]">{{ placed() ? 'Continuar al pago' : 'Omitir' }}</a>
+      }
     </aside>
   </div>
 </section>
