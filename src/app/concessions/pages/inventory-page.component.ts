@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AdminInventoryStore } from '../data/admin-inventory.store';
 import { AdminProductsStore } from '../data/admin-products.store';
@@ -20,7 +20,7 @@ const STATUS_LABELS: Record<ProductStatus, string> = {
   styleUrl: './admin-page.css',
   templateUrl: './inventory-page.component.html',
 })
-export class InventoryPageComponent {
+export class InventoryPageComponent implements OnInit {
   protected readonly products = inject(AdminProductsStore);
   protected readonly inventory = inject(AdminInventoryStore);
   protected readonly form = new FormGroup({
@@ -31,6 +31,10 @@ export class InventoryPageComponent {
   protected readonly error = signal('');
   protected readonly saved = signal('');
   protected readonly statusLabel = (status: ProductStatus): string => STATUS_LABELS[status];
+
+  ngOnInit(): void {
+    void this.products.load();
+  }
 
   protected save(): void {
     const { productId, quantityDelta, reason } = this.form.getRawValue();
