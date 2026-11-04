@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AdminCombosStore } from '../data/admin-combos.store';
+import { AdminProductsStore } from '../data/admin-products.store';
 import { formatCents } from '../model/money';
 import { ProductStatus } from '../model/product';
 
@@ -13,7 +14,8 @@ import { ProductStatus } from '../model/product';
   styleUrl: './admin-page.css',
   templateUrl: './combos-page.component.html',
 })
-export class CombosPageComponent {
+export class CombosPageComponent implements OnInit {
+  private readonly products = inject(AdminProductsStore);
   protected readonly store = inject(AdminCombosStore);
   protected readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true }),
@@ -24,6 +26,10 @@ export class CombosPageComponent {
   protected readonly saved = signal('');
   protected readonly money = formatCents;
   protected readonly statusLabel = (status: ProductStatus): string => (status === 'PUBLISHED' ? 'Publicado' : 'Inactivo');
+
+  ngOnInit(): void {
+    void this.products.load();
+  }
 
   protected setQuantity(productId: string, value: string): void {
     this.quantities.update(current => ({ ...current, [productId]: Number(value) }));

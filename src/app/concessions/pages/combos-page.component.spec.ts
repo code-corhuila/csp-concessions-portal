@@ -1,4 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { showProducts } from '../data/admin-products.fixture.spec';
 import { formatCents, moneyInCents } from '../model/money';
 import { CombosPageComponent } from './combos-page.component';
 
@@ -19,11 +22,16 @@ describe('CombosPageComponent', () => {
   };
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [CombosPageComponent] }).compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [CombosPageComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
     fixture = TestBed.createComponent(CombosPageComponent);
-    fixture.detectChanges();
     page = fixture.nativeElement;
+    await showProducts(fixture);
   });
+
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
 
   it('lists the registered combos with their components, price and status', () => {
     const row = texts('[data-testid="combo-row"]')[0];
