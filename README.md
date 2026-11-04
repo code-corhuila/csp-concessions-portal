@@ -53,12 +53,19 @@ page of `GET /products` and `GET /combos` (100 at a time) when the page opens an
 rule. Prices are integer cents. If the API cannot be reached, the page says that the catalog is not available and lists
 nothing. The standalone run has no token, so the API answers 401 until the portal runs inside the shell.
 
-The order lives in memory (`OrderDraftService`) and a page reload empties it. A quantity must be a
-positive integer.
+The order is built in memory (`OrderDraftService`) and a page reload empties it. A quantity must be a
+positive integer. "Confirmar pedido" sends it to `POST /orders` (`SnackOrderService`) with an `Idempotency-Key` that
+stays the same while the draft does not change, so a retry replays the order instead of reserving the stock twice. The
+page reads `reservationId` from the query string of its address (Booking sends the client to
+`/booking/snack-selection?reservationId=<id>` once the seats are held); only a UUID is accepted. With a reservation the
+page offers "Omitir" (continue without snacks) and, once the order exists, "Continuar al pago", both to
+`/booking/checkout/<id>`. Without a reservation the order is sent without it and the API releases it after
+`ORDER_HOLD_MINUTES`; with one, the worker confirms or releases it when the reservation is confirmed or expires
+(ADR-045). A refusal of the API (for example 409, not enough stock) is shown and the draft is kept.
 
 | Route | Behaviour |
 |---|---|
-| `/booking/snack-selection` | Published product and combo cards of the API, an add button on each, and the order with quantities, subtotals and total. An empty order says so; a failed load says that the catalog is not available |
+| `/booking/snack-selection` | Published product and combo cards of the API, an add button on each, and the order with quantities, subtotals and total, which "Confirmar pedido" sends to the API. An empty order says so; a failed load says that the catalog is not available |
 | `/admin/concessions/products` | Table of the products of the API and form for a new one (saved as a draft with no stock); publish, deactivate and reactivate, each a `PATCH` to `csp-concessions-api` |
 | `/admin/concessions/combos` | Combos with their components; a new combo takes published products in positive whole quantities |
 | `/admin/concessions/inventory` | Stock and last reason per product, an adjustment form that never leaves negative stock, and the movements |

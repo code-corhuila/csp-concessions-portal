@@ -149,3 +149,29 @@ h3 {
   margin: 0;
   font-size: 1.25rem;
 }
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.summary .btn {
+  display: inline-block;
+  margin: 8px 8px 0 0;
+  text-decoration: none;
+}
+
+.summary a.btn-secondary {
+  padding: 8px 16px;
+}
+
+.placed {
+  color: var(--color-brand-secondary);
+  font-weight: 700;
+}
+
+.order-error,
+.load-error {
+  color: #F87171;
+}
