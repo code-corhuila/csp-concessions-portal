@@ -1,14 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { asApiError } from '../../shell-contract';
 import { AdminProduct, NewProduct } from '../model/admin-product';
 import { moneyInCents } from '../model/money';
 import { Product, ProductStatus } from '../model/product';
+import { allPages, messageOf } from './api-calls';
 import { ConcessionsApiService } from './concessions-api.service';
-
-/** The largest page the contract allows. */
-const PAGE_SIZE = 100;
-const FALLBACK_MESSAGE = 'No se pudo completar la operación. Inténtalo de nuevo.';
 
 /**
  * The products of the administration area, as csp-concessions-api holds them. The stock shown is the one the
@@ -26,15 +22,7 @@ export class AdminProductsStore {
   /** Replaces the list with every page of the API. A failure keeps the list and sets {@link loadError}. */
   async load(): Promise<void> {
     try {
-      const loaded: Product[] = [];
-      let page = 1;
-      let totalPages = 1;
-      do {
-        const answer = await firstValueFrom(this.api.listProducts(page, PAGE_SIZE));
-        loaded.push(...answer.data);
-        totalPages = answer.meta.totalPages;
-        page++;
-      } while (page <= totalPages);
+      const loaded = await allPages((page, limit) => this.api.listProducts(page, limit));
       this.items.set(loaded.map(toAdminProduct));
       this.loadError.set('');
     } catch (err) {
@@ -81,11 +69,6 @@ export class AdminProductsStore {
       throw new Error(messageOf(err));
     }
   }
-}
-
-function messageOf(err: unknown): string {
-  const apiError = asApiError(err);
-  return apiError.code === 'UNKNOWN' ? FALLBACK_MESSAGE : apiError.userMessage;
 }
 
 function toAdminProduct(product: Product): AdminProduct {

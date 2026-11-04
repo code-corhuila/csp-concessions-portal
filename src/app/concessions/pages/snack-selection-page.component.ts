@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { OrderDraftService } from '../data/order-draft.service';
-import { SyntheticCatalogService } from '../data/synthetic-catalog.service';
+import { SnackCatalogService } from '../data/snack-catalog.service';
 import { CatalogItem } from '../model/catalog-item';
 import { formatCents } from '../model/money';
 
@@ -14,11 +14,15 @@ import { formatCents } from '../model/money';
 })
 export class SnackSelectionPageComponent {
   protected readonly order = inject(OrderDraftService);
-  private readonly items = inject(SyntheticCatalogService).listPublished();
+  protected readonly catalog = inject(SnackCatalogService);
 
-  protected readonly products = this.items.filter(item => item.kind === 'PRODUCT');
-  protected readonly combos = this.items.filter(item => item.kind === 'COMBO');
+  protected readonly products = computed(() => this.catalog.items().filter(item => item.kind === 'PRODUCT'));
+  protected readonly combos = computed(() => this.catalog.items().filter(item => item.kind === 'COMBO'));
   protected readonly money = formatCents;
+
+  constructor() {
+    void this.catalog.load();
+  }
 
   protected add(item: CatalogItem): void {
     this.order.add(item);
