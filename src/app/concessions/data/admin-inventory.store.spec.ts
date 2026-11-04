@@ -1,6 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { AdminInventoryStore } from './admin-inventory.store';
 import { AdminProductsStore } from './admin-products.store';
+import { seedProducts } from './admin-products.fixture.spec';
 
 const POPCORN = '61000000-0000-0000-0000-000000000001';
 const SODA = '61000000-0000-0000-0000-000000000004';
@@ -11,12 +14,15 @@ describe('AdminInventoryStore', () => {
 
   const stockOf = (id: string): number => products.products().find(p => p.id === id)!.stock;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     store = TestBed.inject(AdminInventoryStore);
-    products = TestBed.inject(AdminProductsStore);
+    products = await seedProducts();
   });
 
-  it('starts with the initial stock movements of the synthetic products, newest first', () => {
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
+
+  it('starts with the initial stock movements, newest first', () => {
     expect(store.movements().map(m => [m.productName, m.quantityDelta, m.reason])).toEqual([
       ['Nachos with cheese', 25, 'Stock inicial'],
       ['Popcorn (large)', 40, 'Stock inicial'],

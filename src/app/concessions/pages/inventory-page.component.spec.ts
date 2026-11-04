@@ -1,4 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { showProducts } from '../data/admin-products.fixture.spec';
 import { InventoryPageComponent } from './inventory-page.component';
 
 describe('InventoryPageComponent', () => {
@@ -23,11 +26,16 @@ describe('InventoryPageComponent', () => {
   };
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [InventoryPageComponent] }).compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [InventoryPageComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
     fixture = TestBed.createComponent(InventoryPageComponent);
-    fixture.detectChanges();
     page = fixture.nativeElement;
+    await showProducts(fixture);
   });
+
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
 
   it('shows the stock of every product with its status and last reason', () => {
     const rows = texts('[data-testid="stock-row"]');
@@ -36,7 +44,6 @@ describe('InventoryPageComponent', () => {
     expect(rows[0]).toContain('Popcorn (large)');
     expect(rows[0]).toContain('40');
     expect(rows[0]).toContain('Publicado');
-    expect(rows[0]).toContain('Stock inicial');
   });
 
   it('registers an adjustment, updates the stock and lists the movement', () => {

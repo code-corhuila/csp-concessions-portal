@@ -8,6 +8,9 @@ and is tagged `v<version>` once it is merged.
 
 ## [Unreleased]
 
+### Changed
+- HU-CONCESSIONS-006: the administration products screen lists, creates and changes the status of products through `csp-concessions-api` instead of an in-memory list: publish, deactivate and reactivate (`PATCH /products/{productId}` with an `Idempotency-Key`), the reason of a refused change is shown, and an inactive product offers "Reactivar". The combos and inventory screens load the same products; their own data and the stock adjustments stay in memory. The standalone run now provides `HttpClient` (without the token of the shell). The synthetic administration products are removed.
+
 ## [2.0.0] - 2026-10-08
 
 MVP 2 (Cut 2), first release of the portal. Story HU-FE-CONCESSIONS-001

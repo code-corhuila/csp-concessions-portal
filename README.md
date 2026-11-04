@@ -64,13 +64,15 @@ positive integer.
 | Route | Behaviour |
 |---|---|
 | `/booking/snack-selection` | Product and combo cards, an add button on each, and the order with quantities, subtotals and total. An empty order says so |
-| `/admin/concessions/products` | Table of products and form for a new one (saved as a draft with no stock); publish and deactivate |
+| `/admin/concessions/products` | Table of the products of the API and form for a new one (saved as a draft with no stock); publish, deactivate and reactivate, each a `PATCH` to `csp-concessions-api` |
 | `/admin/concessions/combos` | Combos with their components; a new combo takes published products in positive whole quantities |
 | `/admin/concessions/inventory` | Stock and last reason per product, an adjustment form that never leaves negative stock, and the movements |
 | `/admin/concessions/orders` | Placeholder |
 
-The administration data is also in memory (`AdminProductsStore`, `AdminCombosStore`, `AdminInventoryStore`) and
-a page reload restores it. The administration seeds are separate from the customer dataset but share its ids.
+The products of the administration come from `csp-concessions-api` through the gateway (`AdminProductsStore` lists,
+creates and changes their status with the shell's authenticated client; standalone runs have no token, so the API answers
+401). The combos and the inventory movements are still in memory (`AdminCombosStore`, `AdminInventoryStore`) and a page
+reload restores them; the stock adjusted in the inventory screen is only shown, it is not sent to the API.
 
 Run on its own, `/` opens `/booking/snack-selection`. The screen is in Spanish and the look follows
 `12-ux-ui/design-system.md` and the mockup of `csp-docs`.

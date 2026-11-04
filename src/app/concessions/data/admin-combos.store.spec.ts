@@ -1,19 +1,21 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { moneyInCents } from '../model/money';
 import { AdminCombosStore } from './admin-combos.store';
 import { AdminProductsStore } from './admin-products.store';
-
-const POPCORN = '61000000-0000-0000-0000-000000000001';
-const NACHOS = '61000000-0000-0000-0000-000000000002';
-const INACTIVE = '61000000-0000-0000-0000-000000000003';
-const DRAFT = '61000000-0000-0000-0000-000000000004';
+import { API_PRODUCTS, DRAFT, INACTIVE, NACHOS, POPCORN, seedProducts } from './admin-products.fixture.spec';
 
 describe('AdminCombosStore', () => {
   let store: AdminCombosStore;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     store = TestBed.inject(AdminCombosStore);
+    await seedProducts();
   });
+
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
 
   it('starts with the synthetic combo', () => {
     expect(store.combos().map(c => [c.name, c.price, c.status])).toEqual([
@@ -57,9 +59,12 @@ describe('AdminCombosStore', () => {
     }
   });
 
-  it('offers only the published products of the products store', () => {
-    const products = TestBed.inject(AdminProductsStore);
-    products.deactivate(NACHOS);
+  it('offers only the published products of the products store', async () => {
+    const deactivating = TestBed.inject(AdminProductsStore).deactivate(NACHOS);
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/concessions/products/' + NACHOS)
+      .flush({ ...API_PRODUCTS[1], status: 'INACTIVE' });
+    await deactivating;
 
     expect(store.availableProducts().map(p => p.id)).toEqual([POPCORN]);
   });
