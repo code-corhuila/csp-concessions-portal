@@ -8,6 +8,10 @@ and is tagged `v<version>` once it is merged.
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-11-04
+
+Release 3.0.0 of the Concessions portal, aligned with the 3.0.0 of the platform: HU-CONCESSIONS-004 (the snack selection reads the real catalog and sends the order with the reservation) and HU-CONCESSIONS-006 (the administration products screen works against the real Concessions API through the gateway), promoted from `qa` to `main`.
+
 ### Changed
 - HU-CONCESSIONS-004: the snack selection of the client lists the published products and combos of `csp-concessions-api` instead of the synthetic catalog, reading every page of `GET /products` and `GET /combos`, and says that the catalog is not available when the API fails. The synthetic catalog is removed.
 - HU-CONCESSIONS-004: the snack selection sends the order to `POST /orders` with its `Idempotency-Key` (the same while the draft does not change) and the `reservationId` of the address when it is a UUID, shows the reason when the API refuses it and keeps the draft; with a reservation it offers "Omitir" and "Continuar al pago" to `/booking/checkout/<id>`.
