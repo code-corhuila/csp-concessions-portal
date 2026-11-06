@@ -9,7 +9,6 @@ export interface AdminProduct {
   price: MoneyInCents;
   stock: number;
   status: ProductStatus;
-  lastReason: string;
 }
 
 /** A product as typed in the form: the price is integer cents, validated by the store. */
