@@ -8,6 +8,9 @@ and is tagged `v<version>` once it is merged.
 
 ## [Unreleased]
 
+### Fixed
+- The container healthcheck (`deploy/Dockerfile` and `deploy/compose.yml`) calls `http://127.0.0.1/health` instead of `http://localhost/health`: inside the container `localhost` resolves first to `::1`, nginx listens on IPv4 only, and Docker reported the portal as `unhealthy` while it served traffic ([#50](https://github.com/code-corhuila/csp-concessions-portal/issues/50)).
+
 ### Changed
 - HU-CONCESSIONS-002: the administration combos screen lists and creates combos through `csp-concessions-api` instead of an in-memory list: it reads every page of `GET /combos`, saves a new combo with `POST /combos` (as a draft) and publishes it with `PATCH /combos/{comboId}`, each with an `Idempotency-Key`. When the API refuses to publish (a component is not published), the draft stays in the list and the reason is shown. The synthetic combo is removed.
 - HU-CONCESSIONS-003 and HU-CONCESSIONS-007: the administration inventory screen sends each stock adjustment to `POST /stock/adjust` (a positive quantity is a receipt, a negative one a withdrawal) with an `Idempotency-Key`, reads the balances and the history again afterwards, and lists the movements of `GET /stock/movements`, every page, newest first. The free-text reason is removed because the contract has none: the movement shows the type the API records (`Entrada` or `Ajuste`). The synthetic movements and the in-memory stock are removed.
