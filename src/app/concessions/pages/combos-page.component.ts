@@ -5,7 +5,13 @@ import { AdminProductsStore } from '../data/admin-products.store';
 import { formatCents } from '../model/money';
 import { ProductStatus } from '../model/product';
 
-/** Combos of the administration area (HU-FE-CONCESSIONS-001, synthetic data in Cut 2). */
+const STATUS_LABELS: Record<ProductStatus, string> = {
+  DRAFT: 'Borrador',
+  PUBLISHED: 'Publicado',
+  INACTIVE: 'Inactivo',
+};
+
+/** Combos of the administration area: they are listed and created through the API (HU-CONCESSIONS-002). */
 @Component({
   selector: 'app-combos-page',
   standalone: true,
@@ -25,17 +31,18 @@ export class CombosPageComponent implements OnInit {
   protected readonly error = signal('');
   protected readonly saved = signal('');
   protected readonly money = formatCents;
-  protected readonly statusLabel = (status: ProductStatus): string => (status === 'PUBLISHED' ? 'Publicado' : 'Inactivo');
+  protected readonly statusLabel = (status: ProductStatus): string => STATUS_LABELS[status];
 
   ngOnInit(): void {
     void this.products.load();
+    void this.store.load();
   }
 
   protected setQuantity(productId: string, value: string): void {
     this.quantities.update(current => ({ ...current, [productId]: Number(value) }));
   }
 
-  protected save(): void {
+  protected async save(): Promise<void> {
     const { name, price } = this.form.getRawValue();
     const items = Object.entries(this.quantities())
       .filter(([, quantity]) => quantity !== 0)
@@ -43,7 +50,7 @@ export class CombosPageComponent implements OnInit {
     this.error.set('');
     this.saved.set('');
     try {
-      this.store.create({ name, price: price === null ? NaN : Math.round(price * 100), items });
+      await this.store.create({ name, price: price === null ? NaN : Math.round(price * 100), items });
     } catch (err) {
       this.error.set(err instanceof Error ? err.message : 'No se pudo guardar el combo.');
       return;
