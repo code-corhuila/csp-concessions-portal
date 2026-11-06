@@ -1,6 +1,9 @@
 <section aria-labelledby="inventory-title">
   <h1 id="inventory-title" class="page-title">Inventario de Concessions</h1>
   <p class="page-description">Registra ajustes auditables sin permitir stock negativo.</p>
+  @if (inventory.loadError()) {
+    <p class="feedback-error" role="alert">{{ inventory.loadError() }}</p>
+  }
 
   <div class="admin-grid">
     <section class="card" aria-labelledby="adjust-title">
@@ -25,10 +28,6 @@
           <label class="form-label" for="inventory-quantity">Cantidad (+ entrada / - salida)</label>
           <input id="inventory-quantity" class="form-control" type="number" step="1" formControlName="quantityDelta" />
         </div>
-        <div class="form-group">
-          <label class="form-label" for="inventory-reason">Motivo</label>
-          <input id="inventory-reason" class="form-control" formControlName="reason" />
-        </div>
         <button class="btn btn-primary btn-full" type="submit">Registrar ajuste</button>
       </form>
     </section>
@@ -39,7 +38,7 @@
         <div class="table-responsive">
           <table class="data-table">
             <thead>
-              <tr><th>Producto</th><th>Stock</th><th>Estado</th><th>Último motivo</th></tr>
+              <tr><th>Producto</th><th>Stock</th><th>Estado</th></tr>
             </thead>
             <tbody>
               @for (product of products.products(); track product.id) {
@@ -49,7 +48,6 @@
                   <td>
                     <span class="badge" [class.badge-published]="product.status === 'PUBLISHED'" [class.badge-inactive]="product.status === 'INACTIVE'">{{ statusLabel(product.status) }}</span>
                   </td>
-                  <td>{{ product.lastReason }}</td>
                 </tr>
               }
             </tbody>
@@ -62,7 +60,7 @@
         <div class="table-responsive">
           <table class="data-table">
             <thead>
-              <tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Motivo</th></tr>
+              <tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Tipo</th></tr>
             </thead>
             <tbody>
               @for (movement of inventory.movements(); track movement.id) {
@@ -70,7 +68,7 @@
                   <td>{{ movement.timestamp | date: 'short' }}</td>
                   <td>{{ movement.productName }}</td>
                   <td>{{ movement.quantityDelta > 0 ? '+' : '' }}{{ movement.quantityDelta }}</td>
-                  <td>{{ movement.reason }}</td>
+                  <td>{{ movementLabel(movement.reason) }}</td>
                 </tr>
               }
             </tbody>

@@ -1,49 +1,54 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { StockAdjustment, StockMovement } from '../model/stock-movement';
 import { AdminProductsStore } from './admin-products.store';
+import { allPages, messageOf } from './api-calls';
+import { ConcessionsApiService } from './concessions-api.service';
 
-export interface NewAdjustment extends StockAdjustment {
-  reason: string;
-}
-
-/** Stock adjustments of the administration area, in memory: each one is auditable and never leaves negative stock. */
+/**
+ * Stock of the administration area, as csp-concessions-api holds it (HU-CONCESSIONS-003 and 007): an adjustment is
+ * sent to the API, which records the movement and keeps the balance from going negative; the balances and the
+ * history shown are read back afterwards.
+ */
 @Injectable({ providedIn: 'root' })
 export class AdminInventoryStore {
+  private readonly api = inject(ConcessionsApiService);
   private readonly products = inject(AdminProductsStore);
-  private readonly items = signal<readonly StockMovement[]>([
-    { id: 'm2', productId: '61000000-0000-0000-0000-000000000002', productName: 'Nachos with cheese', quantityDelta: 25, reason: 'Stock inicial', timestamp: '2026-10-01T09:05:00.000Z' },
-    { id: 'm1', productId: '61000000-0000-0000-0000-000000000001', productName: 'Popcorn (large)', quantityDelta: 40, reason: 'Stock inicial', timestamp: '2026-10-01T09:00:00.000Z' },
-  ]);
+  private readonly items = signal<readonly StockMovement[]>([]);
 
-  /** Newest first. */
+  /** Newest first, as the API answers them. */
   readonly movements = this.items.asReadonly();
+  /** Why the last load failed; empty when it worked. */
+  readonly loadError = signal('');
 
-  adjust(adjustment: NewAdjustment): void {
+  /** Reads the balances and the whole history. A failure keeps what was shown and sets {@link loadError}. */
+  async load(): Promise<void> {
+    await this.products.load();
+    try {
+      this.items.set(await allPages((page, limit) => this.api.listStockMovements(page, limit)));
+      this.loadError.set(this.products.loadError());
+    } catch (err) {
+      this.loadError.set(messageOf(err));
+    }
+  }
+
+  /** A positive quantity is a receipt and a negative one a withdrawal; a zero or fractional one is not an adjustment. */
+  async adjust(adjustment: StockAdjustment): Promise<void> {
     const product = this.products.products().find(p => p.id === adjustment.productId);
-    const reason = adjustment.reason.trim();
     if (!product) {
       throw new Error('El producto no existe.');
     }
     if (!Number.isInteger(adjustment.quantityDelta) || adjustment.quantityDelta === 0) {
       throw new Error('La cantidad debe ser un entero distinto de cero.');
     }
-    if (reason === '') {
-      throw new Error('El motivo es obligatorio.');
-    }
     if (product.stock + adjustment.quantityDelta < 0) {
       throw new Error('El ajuste dejaría el stock en negativo.');
     }
-    this.products.setStock(product.id, product.stock + adjustment.quantityDelta, reason);
-    this.items.update(current => [
-      {
-        id: crypto.randomUUID(),
-        productId: product.id,
-        productName: product.name,
-        quantityDelta: adjustment.quantityDelta,
-        reason,
-        timestamp: new Date().toISOString(),
-      },
-      ...current,
-    ]);
+    try {
+      await firstValueFrom(this.api.adjustStock(adjustment, crypto.randomUUID()));
+    } catch (err) {
+      throw new Error(messageOf(err));
+    }
+    await this.load();
   }
 }
