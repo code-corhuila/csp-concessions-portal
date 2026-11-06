@@ -8,7 +8,7 @@ import { ConcessionsApiService } from './concessions-api.service';
 
 /**
  * The products of the administration area, as csp-concessions-api holds them. The stock shown is the one the
- * API reports; an adjustment made in the inventory screen is kept in memory (it has no endpoint here yet).
+ * API reports; the inventory screen reads it again after each adjustment.
  */
 @Injectable({ providedIn: 'root' })
 export class AdminProductsStore {
@@ -52,11 +52,6 @@ export class AdminProductsStore {
     return this.setStatus(id, 'INACTIVE');
   }
 
-  /** Used by the inventory: the new stock and the reason of the last movement. */
-  setStock(id: string, stock: number, reason: string): void {
-    this.items.update(current => current.map(p => (p.id === id ? { ...p, stock, lastReason: reason } : p)));
-  }
-
   private async setStatus(id: string, status: ProductStatus): Promise<void> {
     const updated = await this.answered(this.api.updateProductStatus(id, status, crypto.randomUUID()));
     this.items.update(current => current.map(p => (p.id === id ? { ...p, status: updated.status } : p)));
@@ -79,6 +74,5 @@ function toAdminProduct(product: Product): AdminProduct {
     price: product.price,
     stock: product.availableStock ?? 0,
     status: product.status,
-    lastReason: '',
   };
 }
