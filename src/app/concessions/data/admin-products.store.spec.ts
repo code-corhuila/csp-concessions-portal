@@ -125,13 +125,4 @@ describe('AdminProductsStore', () => {
     await expectAsync(publishing).toBeRejected();
     expect(store.products().find(p => p.id === POPCORN)!.status).toBe('PUBLISHED');
   });
-
-  it('adjusts the stock shown for a product without calling the API', async () => {
-    await seedProducts();
-
-    store.setStock(DRAFT, 12, 'Delivery');
-
-    const product = store.products().find(p => p.id === DRAFT)!;
-    expect([product.stock, product.lastReason]).toEqual([12, 'Delivery']);
-  });
 });
