@@ -61,6 +61,16 @@ describe('ConcessionsApiService', () => {
     request.flush({ id: 'combo-1', name: 'Movie combo', price: 1000, items: [], status: 'DRAFT' });
   });
 
+  it('sends an idempotency key for combo status updates', () => {
+    service.updateComboStatus('combo-1', 'PUBLISHED', 'combo-status-key').subscribe();
+
+    const request = http.expectOne('/api/v1/concessions/combos/combo-1');
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.headers.get('Idempotency-Key')).toBe('combo-status-key');
+    expect(request.request.body).toEqual({ status: 'PUBLISHED' });
+    request.flush({ id: 'combo-1', name: 'Movie combo', price: 1000, items: [], status: 'PUBLISHED' });
+  });
+
   it('sends an idempotency key for product status updates', () => {
     const status: ProductStatus = 'PUBLISHED';
     service.updateProductStatus('product-1', status, 'status-key').subscribe();
