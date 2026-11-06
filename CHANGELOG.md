@@ -10,7 +10,7 @@ and is tagged `v<version>` once it is merged.
 
 ## [3.0.0] - 2026-11-04
 
-Release 3.0.0 of the Concessions portal, aligned with the 3.0.0 of the platform: HU-CONCESSIONS-004 (the snack selection reads the real catalog and sends the order with the reservation) and HU-CONCESSIONS-006 (the administration products screen works against the real Concessions API through the gateway), promoted from `qa` to `main`.
+Release 3.0.0 of the Concessions portal, aligned with the 3.0.0 of the platform: HU-CONCESSIONS-004 (the snack selection reads the real catalog and sends the order with the reservation), HU-CONCESSIONS-006 (the administration products screen works against the real Concessions API through the gateway), HU-CONCESSIONS-002 (the administration combos screen) and HU-CONCESSIONS-003 and HU-CONCESSIONS-007 (the administration inventory screen: adjustments and movement history), promoted from `qa` to `main`.
 
 ### Changed
 - HU-CONCESSIONS-002: the administration combos screen lists and creates combos through `csp-concessions-api` instead of an in-memory list: it reads every page of `GET /combos`, saves a new combo with `POST /combos` (as a draft) and publishes it with `PATCH /combos/{comboId}`, each with an `Idempotency-Key`. When the API refuses to publish (a component is not published), the draft stays in the list and the reason is shown. The synthetic combo is removed.
