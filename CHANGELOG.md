@@ -9,6 +9,7 @@ and is tagged `v<version>` once it is merged.
 ## [Unreleased]
 
 ### Fixed
+- The branching section of the README draws the promotion branches as `qa-promote/...` and explains why they are not `qa/...` (ADR-021, [#15](https://github.com/code-corhuila/csp-concessions-portal/issues/15)).
 - The container healthcheck (`deploy/Dockerfile` and `deploy/compose.yml`) calls `http://127.0.0.1/health` instead of `http://localhost/health`: inside the container `localhost` resolves first to `::1`, nginx listens on IPv4 only, and Docker reported the portal as `unhealthy` while it served traffic ([#50](https://github.com/code-corhuila/csp-concessions-portal/issues/50)).
 
 ### Changed
