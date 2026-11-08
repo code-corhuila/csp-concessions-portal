@@ -38,4 +38,8 @@ jobs:
             curl -fsD - -o /dev/null -H 'Origin: http://localhost:4200' "http://localhost:8080/$file" | grep -i '^access-control-allow-origin: http://localhost:4200'
             ! curl -fsD - -o /dev/null -H 'Origin: http://evil.example' "http://localhost:8080/$file" | grep -i '^access-control-allow-origin'
           done
+          # The health endpoint carries the same hardening headers as the rest of the portal.
+          for header in x-frame-options x-content-type-options referrer-policy; do
+            curl -fsD - -o /dev/null http://localhost:8080/health | grep -i "^$header:"
+          done
           docker rm -f portal
