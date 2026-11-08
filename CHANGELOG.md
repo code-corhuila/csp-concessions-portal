@@ -21,6 +21,7 @@ Release 3.0.0 of the Concessions portal, aligned with the 3.0.0 of the platform:
 - HU-CONCESSIONS-006: the administration products screen lists, creates and changes the status of products through `csp-concessions-api` instead of an in-memory list: publish, deactivate and reactivate (`PATCH /products/{productId}` with an `Idempotency-Key`), the reason of a refused change is shown, and an inactive product offers "Reactivar". The combos and inventory screens load the same products; their own data and the stock adjustments stay in memory. The standalone run now provides `HttpClient` (without the token of the shell). The synthetic administration products are removed.
 
 ### Fixed
+- The health endpoint of the container answers with the hardening headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) like the rest of the portal: `location = /health` sets `default_type` instead of an `add_header`, which made nginx drop the server-level ones, and the CI step checks the three headers ([#14](https://github.com/code-corhuila/csp-concessions-portal/issues/14)).
 - The container healthcheck (`deploy/Dockerfile` and `deploy/compose.yml`) calls `http://127.0.0.1/health` instead of `http://localhost/health`: inside the container `localhost` resolves first to `::1`, nginx listens on IPv4 only, and Docker reported the portal as `unhealthy` while it served traffic ([#50](https://github.com/code-corhuila/csp-concessions-portal/issues/50)).
 
 ## [2.0.0] - 2026-10-08
