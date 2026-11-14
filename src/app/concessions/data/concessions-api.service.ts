@@ -38,6 +38,12 @@ export class ConcessionsApiService {
     });
   }
 
+  updateComboStatus(id: string, status: ProductStatus, idempotencyKey: string): Observable<Combo> {
+    return this.http.patch<Combo>(`${this.base}/combos/${encodeURIComponent(id)}`, { status }, {
+      headers: { 'Idempotency-Key': idempotencyKey },
+    });
+  }
+
   listOrders(page: number, limit: number): Observable<Page<Order>> {
     return this.http.get<Page<Order>>(`${this.base}/orders`, { params: this.pagination(page, limit) });
   }

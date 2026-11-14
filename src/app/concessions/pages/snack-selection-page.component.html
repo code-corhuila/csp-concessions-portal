@@ -4,12 +4,16 @@
     <p>Agrega comida y bebidas a tu pedido. Este paso es opcional.</p>
   </header>
 
+  @if (catalog.loadError()) {
+    <p class="load-error" data-testid="load-error" role="alert">{{ catalog.loadError() }}</p>
+  }
+
   <div class="snacks-layout">
     <div class="catalog">
       <section aria-labelledby="products-title">
         <h2 id="products-title">Productos</h2>
         <ul class="cards">
-          @for (item of products; track item.id) {
+          @for (item of products(); track item.id) {
             <li class="card" data-testid="product">
               <h3>{{ item.name }}</h3>
               <p class="price">{{ money(item.price) }}</p>
@@ -22,7 +26,7 @@
       <section aria-labelledby="combos-title">
         <h2 id="combos-title">Combos</h2>
         <ul class="cards">
-          @for (item of combos; track item.id) {
+          @for (item of combos(); track item.id) {
             <li class="card" data-testid="combo">
               <h3>{{ item.name }}</h3>
               <p class="price">{{ money(item.price) }}</p>
@@ -53,6 +57,18 @@
         </ul>
       }
       <p class="total"><span>Total</span> <strong data-testid="total">{{ money(order.total()) }}</strong></p>
+
+      @if (placed(); as created) {
+        <p class="placed" data-testid="order-placed" role="status">Tu pedido quedó reservado. Total: {{ money(created.totalAmount) }}</p>
+      } @else {
+        <button type="button" class="btn btn-primary" data-testid="place-order" [disabled]="order.lines().length === 0 || sending()" (click)="placeOrder()">Confirmar pedido</button>
+      }
+      @if (orderError()) {
+        <p class="order-error" data-testid="order-error" role="alert">{{ orderError() }}</p>
+      }
+      @if (reservationId) {
+        <a class="btn btn-secondary" data-testid="continue" [routerLink]="['/booking/checkout', reservationId]">{{ placed() ? 'Continuar al pago' : 'Omitir' }}</a>
+      }
     </aside>
   </div>
 </section>

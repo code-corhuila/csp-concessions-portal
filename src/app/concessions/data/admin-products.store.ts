@@ -1,18 +1,37 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, firstValueFrom } from 'rxjs';
 import { AdminProduct, NewProduct } from '../model/admin-product';
 import { moneyInCents } from '../model/money';
-import { ProductStatus } from '../model/product';
-import { SYNTHETIC_ADMIN_PRODUCTS } from './synthetic-admin-products';
+import { Product, ProductStatus } from '../model/product';
+import { allPages, messageOf } from './api-calls';
+import { ConcessionsApiService } from './concessions-api.service';
 
-/** The products of the administration area, kept in memory: a page reload restores the synthetic ones. */
+/**
+ * The products of the administration area, as csp-concessions-api holds them. The stock shown is the one the
+ * API reports; the inventory screen reads it again after each adjustment.
+ */
 @Injectable({ providedIn: 'root' })
 export class AdminProductsStore {
-  private readonly items = signal<readonly AdminProduct[]>(SYNTHETIC_ADMIN_PRODUCTS);
+  private readonly api = inject(ConcessionsApiService);
+  private readonly items = signal<readonly AdminProduct[]>([]);
 
   readonly products = this.items.asReadonly();
+  /** Why the last load failed; empty when it worked. */
+  readonly loadError = signal('');
+
+  /** Replaces the list with every page of the API. A failure keeps the list and sets {@link loadError}. */
+  async load(): Promise<void> {
+    try {
+      const loaded = await allPages((page, limit) => this.api.listProducts(page, limit));
+      this.items.set(loaded.map(toAdminProduct));
+      this.loadError.set('');
+    } catch (err) {
+      this.loadError.set(messageOf(err));
+    }
+  }
 
   /** A new product is a draft with no stock: it is published when it is ready. */
-  create(product: NewProduct): void {
+  async create(product: NewProduct): Promise<void> {
     const name = product.name.trim();
     if (name === '') {
       throw new Error('El nombre es obligatorio.');
@@ -20,26 +39,40 @@ export class AdminProductsStore {
     if (!Number.isInteger(product.price) || product.price < 0) {
       throw new Error('El precio debe ser un monto no negativo.');
     }
-    this.items.update(current => [
-      ...current,
-      { id: crypto.randomUUID(), name, category: product.category.trim(), price: moneyInCents(product.price), stock: 0, status: 'DRAFT', lastReason: 'Producto creado' },
-    ]);
+    const body = { name, category: product.category.trim(), price: moneyInCents(product.price) };
+    const created = await this.answered(this.api.createProduct(body, crypto.randomUUID()));
+    this.items.update(current => [...current, toAdminProduct(created)]);
   }
 
-  publish(id: string): void {
-    this.setStatus(id, 'PUBLISHED');
+  publish(id: string): Promise<void> {
+    return this.setStatus(id, 'PUBLISHED');
   }
 
-  deactivate(id: string): void {
-    this.setStatus(id, 'INACTIVE');
+  deactivate(id: string): Promise<void> {
+    return this.setStatus(id, 'INACTIVE');
   }
 
-  /** Used by the inventory: the new stock and the reason of the last movement. */
-  setStock(id: string, stock: number, reason: string): void {
-    this.items.update(current => current.map(p => (p.id === id ? { ...p, stock, lastReason: reason } : p)));
+  private async setStatus(id: string, status: ProductStatus): Promise<void> {
+    const updated = await this.answered(this.api.updateProductStatus(id, status, crypto.randomUUID()));
+    this.items.update(current => current.map(p => (p.id === id ? { ...p, status: updated.status } : p)));
   }
 
-  private setStatus(id: string, status: ProductStatus): void {
-    this.items.update(current => current.map(p => (p.id === id ? { ...p, status } : p)));
+  private async answered(request: Observable<Product>): Promise<Product> {
+    try {
+      return await firstValueFrom(request);
+    } catch (err) {
+      throw new Error(messageOf(err));
+    }
   }
+}
+
+function toAdminProduct(product: Product): AdminProduct {
+  return {
+    id: product.id,
+    name: product.name,
+    category: product.category ?? '',
+    price: product.price,
+    stock: product.availableStock ?? 0,
+    status: product.status,
+  };
 }

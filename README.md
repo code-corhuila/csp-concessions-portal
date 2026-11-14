@@ -45,32 +45,36 @@ the shell's.
 | `./snack-routes` | `SNACK_ROUTES` | Snack selection of the purchase flow | `CLIENT` | `/booking/snack-selection` (not mounted yet in `csp-front`) |
 | `./routes` | `CONCESSIONS_ROUTES` | Products, combos and inventory (orders is a placeholder) | `ADMIN` | `/admin/concessions` |
 
-## Cut 2: synthetic catalog (HU-FE-CONCESSIONS-001)
+## The catalog of the snack selection (HU-CONCESSIONS-004)
 
-There is no `csp-concessions-api` in Cut 2. The portal shows a dataset burned into
-`src/app/concessions/data/synthetic-catalog.ts`, with prices in integer cents. These are not real
-records. `SyntheticCatalogService` lists only the items whose status is `PUBLISHED`.
+The snack selection reads its catalog from `csp-concessions-api` through the gateway: `SnackCatalogService` loads every
+page of `GET /products` and `GET /combos` (100 at a time) when the page opens and lists only the items whose status is
+`PUBLISHED`; the API already hides the others from a caller without the write permission, and the filter keeps that
+rule. Prices are integer cents. If the API cannot be reached, the page says that the catalog is not available and lists
+nothing. The standalone run has no token, so the API answers 401 until the portal runs inside the shell.
 
-| Item | Type | Price (cents) | Status | Listed |
-|---|---|---|---|---|
-| Popcorn (large) | Product | 500 | `PUBLISHED` | yes |
-| Nachos with cheese | Product | 350 | `PUBLISHED` | yes |
-| Limited edition combo | Product | 990 | `INACTIVE` | no |
-| Combo Familiar | Combo | 1200 | `PUBLISHED` | yes |
-
-The order lives in memory (`OrderDraftService`) and a page reload empties it. A quantity must be a
-positive integer.
+The order is built in memory (`OrderDraftService`) and a page reload empties it. A quantity must be a
+positive integer. "Confirmar pedido" sends it to `POST /orders` (`SnackOrderService`) with an `Idempotency-Key` that
+stays the same while the draft does not change, so a retry replays the order instead of reserving the stock twice. The
+page reads `reservationId` from the query string of its address (Booking sends the client to
+`/booking/snack-selection?reservationId=<id>` once the seats are held); only a UUID is accepted. With a reservation the
+page offers "Omitir" (continue without snacks) and, once the order exists, "Continuar al pago", both to
+`/booking/checkout/<id>`. Without a reservation the order is sent without it and the API releases it after
+`ORDER_HOLD_MINUTES`; with one, the worker confirms or releases it when the reservation is confirmed or expires
+(ADR-045). A refusal of the API (for example 409, not enough stock) is shown and the draft is kept.
 
 | Route | Behaviour |
 |---|---|
-| `/booking/snack-selection` | Product and combo cards, an add button on each, and the order with quantities, subtotals and total. An empty order says so |
-| `/admin/concessions/products` | Table of products and form for a new one (saved as a draft with no stock); publish and deactivate |
+| `/booking/snack-selection` | Published product and combo cards of the API, an add button on each, and the order with quantities, subtotals and total, which "Confirmar pedido" sends to the API. An empty order says so; a failed load says that the catalog is not available |
+| `/admin/concessions/products` | Table of the products of the API and form for a new one (saved as a draft with no stock); publish, deactivate and reactivate, each a `PATCH` to `csp-concessions-api` |
 | `/admin/concessions/combos` | Combos with their components; a new combo takes published products in positive whole quantities |
 | `/admin/concessions/inventory` | Stock and last reason per product, an adjustment form that never leaves negative stock, and the movements |
 | `/admin/concessions/orders` | Placeholder |
 
-The administration data is also in memory (`AdminProductsStore`, `AdminCombosStore`, `AdminInventoryStore`) and
-a page reload restores it. The administration seeds are separate from the customer dataset but share its ids.
+The products of the administration come from `csp-concessions-api` through the gateway (`AdminProductsStore` lists,
+creates and changes their status with the shell's authenticated client; standalone runs have no token, so the API answers
+401). The combos and the inventory movements are still in memory (`AdminCombosStore`, `AdminInventoryStore`) and a page
+reload restores them; the stock adjusted in the inventory screen is only shown, it is not sent to the API.
 
 Run on its own, `/` opens `/booking/snack-selection`. The screen is in Spanish and the look follows
 `12-ux-ui/design-system.md` and the mockup of `csp-docs`.
@@ -86,8 +90,8 @@ docker compose -f deploy/compose.yml up --build
 
 The optional `PORT` variable controls the host port mapped to the portal. The shell loads this portal from
 another origin, so the container renders its CORS rule from `CORS_ALLOWED_ORIGIN_REGEX` when it starts (ADR-026) and
-refuses to start without it; the development value is `^http://localhost:420[0-5]$` and `deploy/compose.yml` sets it
+refuses to start without it or when the value does not start with `^` and end with `$` (an unanchored regex would also allow longer origins such as `http://localhost:4200.evil.example`); the development value is `^http://localhost:420[0-5]$` and `deploy/compose.yml` sets it
 when it is not defined. CI builds the image and checks that it answers the allowed origin, stays silent for any other
-and does not start without the variable. The
+and does not start with an empty or an unanchored value. The
 shared `csp-frontend` network is external so the portal can connect to the
 platform gateway.

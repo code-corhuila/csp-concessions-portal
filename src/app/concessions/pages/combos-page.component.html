@@ -1,6 +1,9 @@
 <section aria-labelledby="combos-title">
   <h1 id="combos-title" class="page-title">Combos de Concessions</h1>
   <p class="page-description">Define combos usando productos publicados y cantidades positivas.</p>
+  @if (store.loadError()) {
+    <p class="feedback-error" role="alert">{{ store.loadError() }}</p>
+  }
 
   <div class="admin-grid">
     <section class="card" aria-labelledby="new-combo-title">

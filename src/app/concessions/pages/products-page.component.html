@@ -2,12 +2,16 @@
   <h1 id="products-title" class="page-title">Productos de Concessions</h1>
   <p class="page-description">Administra productos publicables para pedidos de clientes.</p>
 
+  @if (store.loadError()) {
+    <p class="feedback-error" role="alert">{{ store.loadError() }}</p>
+  }
+  @if (error()) {
+    <p class="feedback-error" role="alert">{{ error() }}</p>
+  }
+
   <div class="admin-grid">
     <section class="card" aria-labelledby="new-product-title">
       <h2 id="new-product-title" class="card-title">Nuevo producto</h2>
-      @if (error()) {
-        <p class="feedback-error" role="alert">{{ error() }}</p>
-      }
       @if (saved()) {
         <p class="feedback-success" role="status">{{ saved() }}</p>
       }
@@ -46,10 +50,16 @@
                   <span class="badge" [class.badge-published]="product.status === 'PUBLISHED'" [class.badge-inactive]="product.status === 'INACTIVE'">{{ statusLabel(product.status) }}</span>
                 </td>
                 <td>
-                  @if (product.status === 'PUBLISHED') {
-                    <button type="button" class="btn btn-secondary" [attr.aria-label]="'Desactivar ' + product.name" (click)="store.deactivate(product.id)">Desactivar</button>
-                  } @else {
-                    <button type="button" class="btn btn-secondary" [attr.aria-label]="'Publicar ' + product.name" (click)="store.publish(product.id)">Publicar</button>
+                  @switch (product.status) {
+                    @case ('PUBLISHED') {
+                      <button type="button" class="btn btn-secondary" [attr.aria-label]="'Desactivar ' + product.name" (click)="deactivate(product.id)">Desactivar</button>
+                    }
+                    @case ('INACTIVE') {
+                      <button type="button" class="btn btn-secondary" [attr.aria-label]="'Reactivar ' + product.name" (click)="publish(product.id)">Reactivar</button>
+                    }
+                    @default {
+                      <button type="button" class="btn btn-secondary" [attr.aria-label]="'Publicar ' + product.name" (click)="publish(product.id)">Publicar</button>
+                    }
                   }
                 </td>
               </tr>

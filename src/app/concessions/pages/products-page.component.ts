@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AdminProductsStore } from '../data/admin-products.store';
 import { formatCents } from '../model/money';
@@ -10,7 +10,7 @@ const STATUS_LABELS: Record<ProductStatus, string> = {
   INACTIVE: 'Inactivo',
 };
 
-/** Products of the administration area (HU-FE-CONCESSIONS-001, synthetic data in Cut 2). */
+/** Products of the administration area: they are listed, created and published or deactivated through the API (HU-CONCESSIONS-006). */
 @Component({
   selector: 'app-products-page',
   standalone: true,
@@ -19,7 +19,7 @@ const STATUS_LABELS: Record<ProductStatus, string> = {
   styleUrl: './admin-page.css',
   templateUrl: './products-page.component.html',
 })
-export class ProductsPageComponent {
+export class ProductsPageComponent implements OnInit {
   protected readonly store = inject(AdminProductsStore);
   protected readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true }),
@@ -31,18 +31,38 @@ export class ProductsPageComponent {
   protected readonly money = formatCents;
   protected readonly statusLabel = (status: ProductStatus): string => STATUS_LABELS[status];
 
-  protected save(): void {
+  ngOnInit(): void {
+    void this.store.load();
+  }
+
+  protected async save(): Promise<void> {
     const { name, category, price } = this.form.getRawValue();
+    // The form takes units of currency; the store keeps integer cents (ADR-011).
+    const created = await this.attempt(() => this.store.create({ name, category, price: price === null ? NaN : Math.round(price * 100) }));
+    if (created) {
+      this.form.reset();
+      this.saved.set('Producto guardado. Puedes publicarlo cuando esté listo.');
+    }
+  }
+
+  protected publish(id: string): Promise<boolean> {
+    return this.attempt(() => this.store.publish(id));
+  }
+
+  protected deactivate(id: string): Promise<boolean> {
+    return this.attempt(() => this.store.deactivate(id));
+  }
+
+  /** Runs a change of the store and shows why it was refused, if it was. */
+  private async attempt(change: () => Promise<void>): Promise<boolean> {
     this.error.set('');
     this.saved.set('');
     try {
-      // The form takes units of currency; the store keeps integer cents (ADR-011).
-      this.store.create({ name, category, price: price === null ? NaN : Math.round(price * 100) });
+      await change();
+      return true;
     } catch (err) {
       this.error.set(err instanceof Error ? err.message : 'No se pudo guardar el producto.');
-      return;
+      return false;
     }
-    this.form.reset();
-    this.saved.set('Producto guardado. Puedes publicarlo cuando esté listo.');
   }
 }

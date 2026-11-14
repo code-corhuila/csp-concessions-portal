@@ -8,6 +8,22 @@ and is tagged `v<version>` once it is merged.
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-11-04
+
+Release 3.0.0 of the Concessions portal, aligned with the 3.0.0 of the platform: HU-CONCESSIONS-004 (the snack selection reads the real catalog and sends the order with the reservation), HU-CONCESSIONS-006 (the administration products screen works against the real Concessions API through the gateway), HU-CONCESSIONS-002 (the administration combos screen) and HU-CONCESSIONS-003 and HU-CONCESSIONS-007 (the administration inventory screen: adjustments and movement history), promoted from `qa` to `main`.
+
+### Changed
+- The container refuses to start when `CORS_ALLOWED_ORIGIN_REGEX` does not start with `^` and end with `$`, the CI checks an empty and two unanchored values, and the `.json` location serves `remoteEntry.json` only, not `importmap.json` (ADR-026, amendment 2026-10-19; [csp-docs#155](https://github.com/code-corhuila/csp-docs/issues/155)).
+- HU-CONCESSIONS-002: the administration combos screen lists and creates combos through `csp-concessions-api` instead of an in-memory list: it reads every page of `GET /combos`, saves a new combo with `POST /combos` (as a draft) and publishes it with `PATCH /combos/{comboId}`, each with an `Idempotency-Key`. When the API refuses to publish (a component is not published), the draft stays in the list and the reason is shown. The synthetic combo is removed.
+- HU-CONCESSIONS-003 and HU-CONCESSIONS-007: the administration inventory screen sends each stock adjustment to `POST /stock/adjust` (a positive quantity is a receipt, a negative one a withdrawal) with an `Idempotency-Key`, reads the balances and the history again afterwards, and lists the movements of `GET /stock/movements`, every page, newest first. The free-text reason is removed because the contract has none: the movement shows the type the API records (`Entrada` or `Ajuste`). The synthetic movements and the in-memory stock are removed.
+- HU-CONCESSIONS-004: the snack selection of the client lists the published products and combos of `csp-concessions-api` instead of the synthetic catalog, reading every page of `GET /products` and `GET /combos`, and says that the catalog is not available when the API fails. The synthetic catalog is removed.
+- HU-CONCESSIONS-004: the snack selection sends the order to `POST /orders` with its `Idempotency-Key` (the same while the draft does not change) and the `reservationId` of the address when it is a UUID, shows the reason when the API refuses it and keeps the draft; with a reservation it offers "Omitir" and "Continuar al pago" to `/booking/checkout/<id>`.
+- HU-CONCESSIONS-006: the administration products screen lists, creates and changes the status of products through `csp-concessions-api` instead of an in-memory list: publish, deactivate and reactivate (`PATCH /products/{productId}` with an `Idempotency-Key`), the reason of a refused change is shown, and an inactive product offers "Reactivar". The combos and inventory screens load the same products; their own data and the stock adjustments stay in memory. The standalone run now provides `HttpClient` (without the token of the shell). The synthetic administration products are removed.
+
+### Fixed
+- The health endpoint of the container answers with the hardening headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) like the rest of the portal: `location = /health` sets `default_type` instead of an `add_header`, which made nginx drop the server-level ones, and the CI step checks the three headers ([#14](https://github.com/code-corhuila/csp-concessions-portal/issues/14)).
+- The container healthcheck (`deploy/Dockerfile` and `deploy/compose.yml`) calls `http://127.0.0.1/health` instead of `http://localhost/health`: inside the container `localhost` resolves first to `::1`, nginx listens on IPv4 only, and Docker reported the portal as `unhealthy` while it served traffic ([#50](https://github.com/code-corhuila/csp-concessions-portal/issues/50)).
+
 ## [2.0.0] - 2026-10-08
 
 MVP 2 (Cut 2), first release of the portal. Story HU-FE-CONCESSIONS-001
